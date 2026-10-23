@@ -2,14 +2,12 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 
-st.set_page_config(page_title="SEKA ULTRA - Par FABRICE", layout="wide")
-st.title("SEKA ULTRA V16.9 FINAL") # <-- JE GARDE ÇA, JE N'OUBLIE PAS
-st.markdown("### 👤 Créé par : FABRICE - L'EMPIRE BOURSA") # <-- TON NOM ICI
-st.caption(f"PARIS + PMU + BOURSE INTERNATIONALE | {datetime.now().strftime('%d/%m/%Y %H:%M')} | OUAGA | Par FABRICE")
+st.set_page_config(page_title="FABRICE EMPIRE MONDIAL ULTRA", layout="wide")
+st.title("FABRICE EMPIRE MONDIAL ULTRA V16.9 FINAL")
+st.caption(f"PARIS + PMU + BOURSE INTERNATIONALE | {datetime.now().strftime('%d/%m/%Y %H:%M')} | OUAGA")
 
 tab_paris, tab_pmu, tab_bourse = st.tabs(["ANALYSE DU JOUR", "PMU-B COMPLET", "BOURSE INTERNATIONALE"])
 
-# --- PARIS AVEC MEME MENU QUE TA CAPTURE ---
 with tab_paris:
     st.subheader("PARIS LONAB - 7 TYPES")
     type_paris = st.selectbox("Type LONAB", ["1X2", "Double Chance", "BTTS Oui/Non", "Over/Under", "Cartons", "Corners", "Score Exact"], key="paris_menu")
@@ -79,12 +77,38 @@ with tab_pmu:
     else: st.code(f"{type_pmu}: 1-7-5 | Gain estimé 85.200F")
 
 with tab_bourse:
-    st.subheader("BOURSE INTERNATIONALE")
-    st.dataframe(pd.DataFrame([
-        ["SONATEL.SN", 18500, "+2.7%", 76.5, "ULTRA", "ACHETER"],
-        ["NVDA", 890.5, "+8.5%", 78.5, "ULTRA", "ACHETER"],
-        ["BTC", 67450, "+8.7%", 83.2, "PIEGE", "VENDRE"],
-        ["GOLD", 2345, "+6.5%", 77.8, "ULTRA", "ACHETER"],
-    ], columns=["Actif","Prix","Var","IA","STATUT","Action"]), use_container_width=True)
+    st.subheader("BOURSE INTERNATIONALE - FABRICE EMPIRE MONDIAL")
+    type_bourse = st.selectbox("Marché", ["BRVM", "USA", "CRYPTO", "OR & MATIERES"], key="bourse_menu")
+    
+    if type_bourse == "BRVM":
+        df_b = pd.DataFrame([
+            ["SONATEL.SN", 18500, "+2.7%", 76.5, "ULTRA", "ACHETER"],
+            ["ORANGE.SN", 11200, "+1.8%", 71.2, "VERT", "ACHETER"],
+            ["ECOBANK.CI", 4500, "+3.1%", 74.8, "ULTRA", "ACHETER"],
+            ["SGB.CI", 12500, "+0.9%", 68.5, "ATTENTE", "GARDER"],
+        ], columns=["Actif","Prix","Var","IA %","STATUT","Action"])
+    elif type_bourse == "USA":
+        df_b = pd.DataFrame([
+            ["NVDA", 890.5, "+8.5%", 78.5, "ULTRA", "ACHETER"],
+            ["AAPL", 182.5, "+4.2%", 73.2, "VERT", "ACHETER"],
+            ["TSLA", 245.2, "+6.8%", 75.5, "ULTRA", "ACHETER"],
+            ["MSFT", 415.2, "+2.1%", 70.1, "VERT", "ACHETER"],
+        ], columns=["Actif","Prix","Var","IA %","STATUT","Action"])
+    elif type_bourse == "CRYPTO":
+        df_b = pd.DataFrame([
+            ["BTC", 67450, "+8.7%", 83.2, "PIEGE", "VENDRE"],
+            ["ETH", 3450, "+5.2%", 76.8, "VERT", "ACHETER"],
+            ["SOL", 145.2, "+11%", 79.5, "ULTRA", "ACHETER"],
+            ["BNB", 580, "+3.2%", 72.1, "VERT", "ACHETER"],
+        ], columns=["Actif","Prix","Var","IA %","STATUT","Action"])
+    else:
+        df_b = pd.DataFrame([
+            ["GOLD", 2345, "+6.5%", 77.8, "ULTRA", "ACHETER"],
+            ["SILVER", 28.5, "+4.2%", 71.5, "VERT", "ACHETER"],
+            ["PETROLE", 85.2, "+2.8%", 69.8, "ATTENTE", "GARDER"],
+        ], columns=["Actif","Prix","Var","IA %","STATUT","Action"])
+    
+    st.dataframe(df_b, use_container_width=True)
+    st.success(f"MARCHE {type_bourse} - Analyse FABRICE EMPIRE MONDIAL")
 
-st.caption("SEKA ULTRA V16.9 - Par FABRICE - OUAGA - N'oublie pas ça là")
+st.caption("FABRICE EMPIRE MONDIAL ULTRA V16.9 - OUAGA - BOURSE INTERNATIONALE COMPLETE")
