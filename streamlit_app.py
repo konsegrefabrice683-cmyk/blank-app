@@ -1,114 +1,48 @@
 import streamlit as st
 import pandas as pd
-from datetime import datetime, date
-import time
+from datetime import datetime
 
-st.set_page_config(page_title="RH Manager - Fabrice", page_icon="👔", layout="wide")
+st.set_page_config(page_title="SEKA ULTRA", layout="wide")
+st.title("SEKA ULTRA V16.9 FINAL")
+st.markdown("👤 **Créé par : FABRICE**")
+st.caption(f"PARIS + PMU + BOURSE INTERNATIONALE | {datetime.now().strftime('%d/%m/%Y %H:%M')} | OUAGA - Par FABRICE")
 
-st.markdown("""
-<style>
-.big-title {font-size:32px; font-weight:bold; color:#1E3A8A;}
-.card {background:#F3F4F6; padding:15px; border-radius:10px; margin:10px 0;}
-</style>
-""", unsafe_allow_html=True)
+tab_paris, tab_pmu, tab_bourse = st.tabs(["ANALYSE DU JOUR", "PMU-B COMPLET", "BOURSE INTERNATIONALE"])
 
-if 'employees' not in st.session_state:
-    st.session_state.employees = pd.DataFrame([
-        {"ID": 1, "Nom": "KONÉ Fabrice", "Poste": "Manager RH", "Département": "RH", "Salaire": 500000, "Statut": "Actif"},
-        {"ID": 2, "Nom": "OUEDRAOGO Awa", "Poste": "Comptable", "Département": "Finance", "Salaire": 350000, "Statut": "Actif"},
-        {"ID": 3, "Nom": "TRAORÉ Moussa", "Poste": "Développeur", "Département": "IT", "Salaire": 400000, "Statut": "Congé"},
-    ])
+# --- PARIS AVEC MEME MENU QUE TA CAPTURE ---
+with tab_paris:
+    st.subheader("PARIS LONAB - 7 TYPES")
+    type_paris = st.selectbox("Type LONAB", 
+        ["1X2", "Double Chance", "BTTS Oui/Non", "Over/Under", "Cartons", "Corners", "Score Exact"], 
+        key="paris_menu"
+    )
+    
+    if type_paris == "1X2":
+        df = pd.DataFrame([
+            ["Brest vs Nice", "Brest Win", 2.45, "62%", "+5.5%", 76.2, "FEU VERT"],
+            ["Mamelodi vs Wiliete", "Mamelodi Win", 1.85, "75%", "+8.5%", 79.2, "FEU VERT ULTRA"],
+            ["Raja vs El-Kanemi", "Raja Win", 1.90, "66%", "+6.2%", 75.5, "FEU VERT ULTRA"],
+        ], columns=["Match","Marche","Cote LONAB","Proba","Value","IA %","STATUT"])
+        st.code("TICKET 1X2: Brest (2.45) + Mamelodi (1.85) = 4.53 -> 13.590F")
 
-if 'presences' not in st.session_state:
-    st.session_state.presences = []
+    elif type_paris == "Double Chance":
+        df = pd.DataFrame([
+            ["Brest vs Nice", "1X", 1.72, "68%", "+7.2%", 76.3, "FEU VERT ULTRA"],
+            ["Mamelodi vs Wiliete", "1X", 1.55, "75%", "+8.5%", 79.2, "FEU VERT ULTRA"],
+            ["Raja vs El-Kanemi", "1X", 1.68, "65%", "+3.1%", 70.1, "ATTENTE"],
+        ], columns=["Match","Marche","Cote LONAB","Proba","Value","IA %","STATUT"])
+        st.code("TICKET DC: Brest 1X (1.72) + Mamelodi 1X (1.55) = 2.66 -> 7.980F PLUS SUR")
 
-st.sidebar.markdown("### RH Manager")
-menu = st.sidebar.radio("Navigation", ["📊 Tableau de bord", "👥 Employés", "✅ Présences", "📝 Congés", "💰 Paie"])
+    elif type_paris == "BTTS Oui/Non":
+        df = pd.DataFrame([
+            ["Brest vs Nice", "BTTS Oui", 1.85, "62%", "+4.8%", 74.1, "FEU VERT"],
+            ["Raja vs El-Kanemi", "BTTS Oui", 1.78, "64%", "+5.1%", 73.4, "FEU VERT ULTRA"],
+            ["Al-Ahli vs Khaleej", "BTTS Oui", 1.72, "68%", "+6.1%", 75.8, "FEU VERT ULTRA"],
+        ], columns=["Match","Marche","Cote LONAB","Proba","Value","IA %","STATUT"])
+        st.code("TICKET BTTS: 1.85 + 1.78 + 1.72 = 5.66 -> 16.980F")
 
-st.markdown('<div class="big-title">👔 Plateforme RH - Gestion Complète</div>', unsafe_allow_html=True)
-st.caption(f"Connecté: Fabrice | {date.today().strftime('%d/%m/%Y')} | Ouagadougou")
-
-if menu == "📊 Tableau de bord":
-    col1, col2, col3, col4 = st.columns(4)
-    col1.metric("Total Employés", len(st.session_state.employees))
-    col2.metric("Actifs", len(st.session_state.employees[st.session_state.employees['Statut']=='Actif']))
-    col3.metric("En Congé", len(st.session_state.employees[st.session_state.employees['Statut']=='Congé']))
-    col4.metric("Présents Aujourd'hui", len(st.session_state.presences))
-    st.divider()
-    st.subheader("Répartition par département")
-    st.bar_chart(st.session_state.employees['Département'].value_counts())
-    st.dataframe(st.session_state.employees, use_container_width=True)
-
-elif menu == "👥 Employés":
-    st.subheader("Gestion des Employés")
-    tab1, tab2 = st.tabs(["Liste", "Ajouter"])
-    with tab1:
-           menu = st.sidebar.radio("Navigation", ["📊 Tableau de bord", "👥 Employés", "✅ Présences", "📝 Congés", "💰 Paie"])
-
-    st.markdown('<div class="big-title">👔 Plateforme RH - Gestion Complète</div>', unsafe_allow_html=True)
-    st.caption(f"Connecté: Fabrice | {date.today().strftime('%d/%m/%Y')} | Ouagadougou")
-
-    if menu == "📊 Tableau de bord":
-        col1, col2, col3, col4 = st.columns(4)
-        col1.metric("Total Employés", len(st.session_state.employees))
-        col2.metric("Actifs", len(st.session_state.employees[st.session_state.employees['Statut']=='Actif']))
-        col3.metric("En Congé", len(st.session_state.employees[st.session_state.employees['Statut']=='Congé']))
-        col4.metric("Présents Aujourd'hui", len(st.session_state.presences))
-        st.divider()
-        st.subheader("Répartition par département")
-        st.bar_chart(st.session_state.employees['Département'].value_counts())
-        st.dataframe(st.session_state.employees, use_container_width=True)
-
-    elif menu == "👥 Employés":
-        st.subheader("Gestion des Employés")
-        tab1, tab2 = st.tabs(["Liste", "Ajouter"])
-        with tab1:
-            st.dataframe(st.session_state.employees, use_container_width=True)
-        with tab2:
-            with st.form("add_emp"):
-                nom = st.text_input("Nom complet")
-                poste = st.text_input("Poste")
-                dept = st.selectbox("Département", ["RH", "Finance", "IT", "Marketing", "Ventes"])
-                salaire = st.number_input("Salaire FCFA", min_value=0)
-                if st.form_submit_button("Ajouter Employé"):
-                    new_id = st.session_state.employees['ID'].max()+1 if len(st.session_state.employees)>0 else 1
-                    new_row = pd.DataFrame([{"ID": new_id, "Nom": nom, "Poste": poste, "Département": dept, "Salaire": salaire, "Statut": "Actif"}])
-                    st.session_state.employees = pd.concat([st.session_state.employees, new_row], ignore_index=True)
-                    st.success(f"{nom} ajouté !")
-
-    elif menu == "✅ Présences":
-        st.subheader("Pointage Présence")
-        emp_list = st.session_state.employees['Nom'].tolist()
-        choisi = st.selectbox("Employé", emp_list)
-        if st.button("📥 Arrivée"):
-            st.session_state.presences.append({"Nom": choisi, "Heure": datetime.now().strftime("%H:%M:%S"), "Type": "Arrivée", "Date": str(date.today())})
-            st.success(f"Arrivée {choisi} enregistrée")
-        if st.button("📤 Départ"):
-            st.session_state.presences.append({"Nom": choisi, "Heure": datetime.now().strftime("%H:%M:%S"), "Type": "Départ", "Date": str(date.today())})
-            st.success(f"Départ {choisi} enregistré")
-        if st.session_state.presences:
-            st.table(pd.DataFrame(st.session_state.presences))
-
-    elif menu == "📝 Congés":
-        st.subheader("Demande de Congé")
-        with st.form("conge"):
-            emp = st.selectbox("Employé", st.session_state.employees['Nom'].tolist())
-            type_c = st.selectbox("Type", ["Annuel", "Maladie", "Maternité", "Sans solde"])
-            debut = st.date_input("Début")
-            fin = st.date_input("Fin")
-            motif = st.text_area("Motif")
-            if st.form_submit_button("Soumettre Demande"):
-                st.success(f"Demande de congé {type_c} pour {emp} soumise !")
-
-    elif menu == "💰 Paie":
-        st.subheader("Fiche de Paie")
-        st.dataframe(st.session_state.employees[['Nom','Poste','Salaire']], use_container_width=True)
-        emp_paie = st.selectbox("Choisir employé", st.session_state.employees['Nom'].tolist())
-        if emp_paie:
-            sal = st.session_state.employees[st.session_state.employees['Nom']==emp_paie]['Salaire'].values[0]
-            st.markdown(f"<div class='card'><h3>Bulletin: {emp_paie}</h3><p>Brut: {sal:,} FCFA</p><p>Net: {int(sal*0.95):,} FCFA</p></div>", unsafe_allow_html=True)
-            if st.button("📄 Générer PDF Paie"):
-                st.balloons()
-                st.success("PDF généré !")
-
-    st.sidebar.success("App prête ✅")
+    elif type_paris == "Over/Under":
+        df = pd.DataFrame([
+            ["Brest vs Nice", "Over 1.5", 1.34, "82%", "+5.2%", 77.2, "FEU VERT ULTRA"],
+            ["Al-Ahli vs Khaleej", "Over 2.5", 1.85, "66%", "+6.8%", 75.1, "FEU VERT ULTRA"],
+            ["Al-Ahli vs Khaleej", "Over 3.5", 2.85, "38%",
