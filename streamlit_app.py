@@ -45,4 +45,59 @@ with tab_paris:
         df = pd.DataFrame([
             ["Brest vs Nice", "Over 1.5", 1.34, "82%", "+5.2%", 77.2, "FEU VERT ULTRA"],
             ["Al-Ahli vs Khaleej", "Over 2.5", 1.85, "66%", "+6.8%", 75.1, "FEU VERT ULTRA"],
-            ["Al-Ahli vs Khaleej", "Over 3.5", 2.85, "38%",
+            ["Al-Ahli vs Khaleej", "Over 3.5", 2.85, "38%", "+4.2%", 70.1, "FEU VERT"],
+        ], columns=["Match","Marche","Cote LONAB","Proba","Value","IA %","STATUT"])
+        st.code("TICKET OVER: Over 1.5 (1.34) + Over 2.5 (1.85) = 2.47 -> 7.410F")
+
+    elif type_paris == "Cartons":
+        df = pd.DataFrame([
+            ["Brest vs Nice", "Cartons Over 3.5", 1.75, "68%", "+6.1%", 74.5, "FEU VERT ULTRA"],
+            ["Raja vs El-Kanemi", "Cartons Over 4.5", 1.85, "65%", "+5.8%", 74.2, "FEU VERT"],
+        ], columns=["Match","Marche","Cote LONAB","Proba","Value","IA %","STATUT"])
+        st.code("TICKET CARTONS: Over 3.5 (1.75) + Over 4.5 (1.85) = 3.23 -> 9.690F")
+
+    elif type_paris == "Corners":
+        df = pd.DataFrame([
+            ["Mamelodi vs Wiliete", "Corners Over 9.5", 1.90, "62%", "+6.2%", 73.8, "FEU VERT"],
+            ["Brest vs Nice", "Corners Over 8.5", 1.75, "68%", "+4.1%", 71.2, "FEU VERT"],
+        ], columns=["Match","Marche","Cote LONAB","Proba","Value","IA %","STATUT"])
+        st.code("TICKET CORNERS: Over 9.5 (1.90) + Over 8.5 (1.75) = 3.32 -> 9.960F")
+
+    else:
+        df = pd.DataFrame([
+            ["Brest vs Nice", "2-1", 8.50, "12%", "+8.5%", 68.2, "FEU VERT"],
+            ["Al-Ahli vs Khaleej", "3-1", 12.00, "9%", "+7.2%", 70.5, "FEU VERT"],
+        ], columns=["Match","Marche","Cote LONAB","Proba","Value","IA %","STATUT"])
+        st.code("TICKET SCORE: 2-1 (8.50) mise 1000F -> 8.500F")
+
+    st.dataframe(df, use_container_width=True)
+
+# --- PMU ---
+with tab_pmu:
+    st.subheader("PMU-B LONAB - 7 TYPES")
+    type_pmu = st.selectbox("Type LONAB", ["Quinte+", "Quarte", "Tierce", "Couple Gagnant", "Couple Place", "Gagnant", "Place"], key="pmu_menu")
+    
+    df_pmu = pd.DataFrame([
+        ["1", "Mogho Power", 2.1, "42%", "+6.2%", 74.2, "FEU VERT ULTRA"],
+        ["7", "Bangr Nooma", 3.2, "28%", "+4.1%", 72.8, "FEU VERT ULTRA"],
+        ["5", "Etalon dOr", 3.8, "25%", "+2.8%", 68.5, "ATTENTE"],
+        ["3", "Wend Panga", 4.5, "18%", "-4.2%", 55.1, "NO VALUE"],
+    ], columns=["Num","Cheval","Cote LONAB","Proba","Value","IA %","STATUT"])
+    st.dataframe(df_pmu, use_container_width=True)
+    
+    if type_pmu == "Quinte+": st.code("QUINTE+: 1-7-5-3-2 | Gain 435.600F")
+    elif type_pmu == "Couple Place": st.code("COUPLE PLACE: 1-7 | Cote 2.85 | Gain 8.550F PLUS SUR")
+    elif type_pmu == "Gagnant": st.code("GAGNANT: 1 | Cote 2.1 | Gain 6.300F")
+    elif type_pmu == "Place": st.code("PLACE: 1 | Cote 1.35 | Gain 4.050F LE PLUS SUR")
+    else: st.code(f"{type_pmu}: 1-7-5 | Gain estimé 85.200F")
+
+with tab_bourse:
+    st.subheader("BOURSE INTERNATIONALE")
+    st.dataframe(pd.DataFrame([
+        ["SONATEL.SN", 18500, "+2.7%", 76.5, "ULTRA", "ACHETER"],
+        ["NVDA", 890.5, "+8.5%", 78.5, "ULTRA", "ACHETER"],
+        ["BTC", 67450, "+8.7%", 83.2, "PIEGE", "VENDRE"],
+        ["GOLD", 2345, "+6.5%", 77.8, "ULTRA", "ACHETER"],
+    ], columns=["Actif","Prix","Var","IA","STATUT","Action"]), use_container_width=True)
+
+st.caption("SEKA ULTRA V16.9 - Par FABRICE - OUAGA")
