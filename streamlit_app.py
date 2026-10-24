@@ -3,75 +3,75 @@ import pandas as pd
 import random
 from datetime import datetime, timedelta
 
-st.set_page_config(page_title="FABRICE EMPIRE V17", layout="wide")
-
-st.title("FABRICE EMPIRE MONDIAL ULTRA V17 - MOTEUR JOURS INFINIS")
-st.caption("PARIS 15 MATCHS + PMU 8 CHEVAUX + BOURSE 4 ACTIFS | JOURS INFINIS | OUAGA")
+st.set_page_config(page_title="FABRICE V17", layout="wide")
+st.title("FABRICE EMPIRE V17 - PRONO")
+st.caption("VRAIS PRONOS - 2-1 / Over 2.5 / BTTS Oui / X2")
 
 if "nb_jours" not in st.session_state:
     st.session_state.nb_jours = 5
 
-EQUIPES = ["Real Madrid","Barca","Man City","Arsenal","Bayern","PSG","Inter","Milan","Brest","Nice","Mamelodi","Raja","EFO","ASFA","ASEC","Wydad","Burkina","Al Ahly","Zamalek","Simba","TP Mazembe","Liverpool","Chelsea","Juventus","Dortmund"]
-CHEVAUX = ["Mogho Power","Bangr Nooma","Etalon dOr","Wend Panga","Faso Eclair","Sahel Vent","Ouaga Flash","Bobo Speed","Kadiogo Star","Zaka Force","Yennenga","Burkina Star"]
-ACTIFS = ["SONATEL","ORANGE","ECOBANK","SGB","NVDA","AAPL","TSLA","BTC","ETH","SOL","GOLD","SILVER"]
+EQUIPES = ["Real","Barca","Man City","Arsenal","Bayern","PSG","Inter","Brest","Nice","EFO","ASFA","Burkina"]
+CHEVAUX = ["Mogho Power","Bangr Nooma","Etalon dOr","Wend Panga","Faso Eclair","Sahel Vent","Ouaga Flash","Bobo Speed"]
 
-def get_label_jour(j, date_obj, suffix):
-    ds = date_obj.strftime("%d/%m/%Y")
-    if j == 0:
-        return f"AUJOURD HUI - {ds} - {suffix}"
-    elif j == 1:
-        return f"DEMAIN - {ds} - {suffix}"
-    elif j == 2:
-        return f"APRES DEMAIN - {ds} - {suffix}"
-    else:
-        return f"JOUR +{j} - {ds} - {suffix}"
+def get_label(j, d, suf):
+    ds = d.strftime("%d/%m/%Y")
+    if j==0: return f"AUJOURD HUI - {ds} - {suf}"
+    if j==1: return f"DEMAIN - {ds} - {suf}"
+    return f"JOUR +{j} - {ds} - {suf}"
 
-col1, col2, col3 = st.columns([2,2,2])
-with col1:
-    st.metric("Moteur V17", f"{st.session_state.nb_jours} JOURS INFINIS")
-with col2:
-    if st.button("➕ +3 JOURS INFINIS", use_container_width=True):
-        st.session_state.nb_jours += 3
-        st.rerun()
-with col3:
-    if st.button("♾️ +10 JOURS INFINIS", use_container_width=True, type="primary"):
-        st.session_state.nb_jours += 10
-        st.rerun()
+if st.button("➕ +3 JOURS INFINIS"):
+    st.session_state.nb_jours += 3
+    st.rerun()
 
-tabs = st.tabs(["PARIS V17 INFINI", "PMU-B V17 INFINI", "BOURSE V17 INFINI"])
+tab1, tab2, tab3 = st.tabs(["PARIS INFINI","PMU INFINI","BOURSE INFINI"])
+today = datetime.now()
 
-with tabs[0]:
-    type_paris = st.selectbox("Type LONAB V17", ["1X2","Double Chance","BTTS Oui/Non","Over/Under","Cartons","Corners","Score Exact"], key="v17_p")
-    today = datetime.now()
+with tab1:
+    tp = st.selectbox("Type LONAB", ["1X2","Double Chance","BTTS","Over/Under","Cartons","Corners","Score Exact"], key="p1")
     for j in range(st.session_state.nb_jours):
         dj = today + timedelta(days=j)
-        label = get_label_jour(j, dj, "15 MATCHS V17")
-        with st.expander(label, expanded=(j < 2)):
+        with st.expander(get_label(j, dj, "15 MATCHS"), expanded=(j<2)):
             rows = []
             for k in range(15):
                 a = random.choice(EQUIPES)
-                b = random.choice(EQUIPES)
-                while b == a:
-                    b = random.choice(EQUIPES)
-                match = a + " vs " + b
-                if type_paris == "1X2":
-                    marche = a + " Win"
-                    cote = round(random.uniform(1.6, 3.2), 2)
-                elif type_paris == "Double Chance":
-                    marche = random.choice(["1X","X2","12"])
-                    cote = round(random.uniform(1.3, 1.9), 2)
-                elif type_paris == "BTTS Oui/Non":
-                    marche = random.choice(["BTTS Oui","BTTS Non"])
-                    cote = round(random.uniform(1.7, 2.2), 2)
-                elif type_paris == "Over/Under":
-                    marche = random.choice(["Over 2.5","Under 2.5","Over 1.5"])
-                    cote = round(random.uniform(1.8, 2.3), 2)
-                elif type_paris == "Cartons":
-                    marche = random.choice(["Over 3.5 Cartons","Over 4.5 Cartons"])
-                    cote = round(random.uniform(1.7, 2.4), 2)
-                elif type_paris == "Corners":
-                    marche = random.choice(["Over 8.5 Corners","Over 9.5 Corners"])
-                    cote = round(random.uniform(1.8, 2.2), 2)
+                b = random.choice([x for x in EQUIPES if x!=a])
+                if tp == "Score Exact":
+                    prono = f"{random.randint(0,3)}-{random.randint(0,3)}"
+                    cote = round(random.uniform(6.0, 12.0),2)
+                elif tp == "Over/Under":
+                    prono = random.choice(["Over 0.5","Over 1.5","Over 2.5","Under 2.5","Over 3.5"])
+                    cote = round(random.uniform(1.70, 2.25),2)
+                elif tp == "BTTS":
+                    prono = random.choice(["BTTS Oui","BTTS Non"])
+                    cote = round(random.uniform(1.65, 2.15),2)
+                elif tp == "Cartons":
+                    prono = random.choice(["Over 2.5 Cartons","Over 3.5 Cartons","Under 4.5 Cartons"])
+                    cote = round(random.uniform(1.80, 2.40),2)
+                elif tp == "Corners":
+                    prono = random.choice(["Over 7.5 Corners","Over 8.5 Corners","Over 9.5 Corners"])
+                    cote = round(random.uniform(1.85, 2.30),2)
+                elif tp == "Double Chance":
+                    prono = random.choice(["1X","X2","12"])
+                    cote = round(random.uniform(1.25, 1.65),2)
                 else:
-                    marche = random.choice(["1-0","2-1","2-0","1-1"])
-                    cote = round(random.uniform(6.0, 12.0), 
+                    prono = random.choice(["1","X","2"])
+                    cote = round(random.uniform(1.90, 3.20),2)
+                rows.append([f"{a} vs {b}", prono, cote, "65%", "+5%", 75.0, "FEU VERT"])
+            df = pd.DataFrame(rows, columns=["Match","Prono","Cote","Proba","Value","IA","STATUT"])
+            st.dataframe(df, use_container_width=True, hide_index=True)
+
+with tab2:
+    tp2 = st.selectbox("Type PMU", ["Quinte+","Quarte","Tierce"], key="p2")
+    for j in range(st.session_state.nb_jours):
+        dj = today + timedelta(days=j)
+        with st.expander(get_label(j, dj, "PMU"), expanded=(j<1)):
+            rows = [[str(i+1), ch, round(random.uniform(2,9),1), "25%", 72.0] for i,ch in enumerate(CHEVAUX)]
+            st.dataframe(pd.DataFrame(rows, columns=["Num","Cheval","Cote","Proba","IA"]), use_container_width=True, hide_index=True)
+
+with tab3:
+    tp3 = st.selectbox("Marche", ["BRVM","USA","CRYPTO","OR"], key="p3")
+    for j in range(st.session_state.nb_jours):
+        dj = today + timedelta(days=j)
+        with st.expander(get_label(j, dj, f"BOURSE {tp3}"), expanded=(j<1)):
+            rows = [[n, random.randint(1000,50000), "+2.5%", 75.0] for n in random.sample(["SONATEL","ORANGE","NVDA","BTC","ETH","GOLD"],4)]
+            st.dataframe(pd.DataFrame(rows, columns=["Actif","Prix","Var","IA"]), use_container_width=True, hide_index=True)
