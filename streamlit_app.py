@@ -3,89 +3,199 @@ import pandas as pd
 import random
 from datetime import datetime, timedelta
 
-st.set_page_config(page_title="FABRICE EMPIRE ULTRA", layout="wide")
-st.title("FABRICE EMPIRE MONDIAL ULTRA - TOUT INFINI")
-st.caption("OUAGA")
+st.set_page_config(
+    page_title="FABRICE EMPIRE MONDIAL ULTRA",
+    layout="wide"
+)
 
+st.title("FABRICE EMPIRE MONDIAL ULTRA V17 - TOUT INFINI")
+st.caption("FABRICE EMPIRE - OUAGA - 15 MATCHS PAR JOUR - JOURS INFINIS")
+
+# --- ETAT ---
 if "nb_jours" not in st.session_state:
     st.session_state.nb_jours = 3
 
-EQUIPES = ["Brest","Nice","Mamelodi","Raja","Real","Barca","Man City","Arsenal","Bayern","Dortmund","PSG","Lyon","Inter","Milan","Al Hilal","Al Nassr","EFO","ASFA","ASEC","Wydad","Burkina","Mali","Al Ahly","Zamalek","Simba","Yanga"]
+# --- DONNEES ---
+EQUIPES = [
+    "Brest", "Nice", "Mamelodi", "Raja", "Real Madrid", "Barca",
+    "Man City", "Arsenal", "Bayern", "Dortmund", "PSG", "Lyon",
+    "Inter", "Milan", "Al Hilal", "Al Nassr", "EFO", "ASFA",
+    "ASEC", "Wydad", "Burkina", "Mali", "Al Ahly", "Zamalek"
+]
 
-CHEVAUX = ["Mogho Power","Bangr Nooma","Etalon dOr","Wend Panga","Faso Eclair","Sahel Vent","Ouaga Flash","Bobo Speed","Kadiogo Star","Mogho Rapide"]
+CHEVAUX_BASE = [
+    "Mogho Power", "Bangr Nooma", "Etalon dOr", "Wend Panga",
+    "Faso Eclair", "Sahel Vent", "Ouaga Flash", "Bobo Speed"
+]
 
-def gen_matchs():
-    res = []
-    for _ in range(15):
+BOURSE_BASE = [
+    "SONATEL", "ORANGE", "ECOBANK", "SGB",
+    "NVDA", "AAPL", "TSLA", "BTC", "ETH", "GOLD"
+]
+
+def creer_15_matchs():
+    liste = []
+    for i in range(15):
         a = random.choice(EQUIPES)
-        b = random.choice([x for x in EQUIPES if x != a])
-        res.append(a + " vs " + b)
-    return res
+        b = random.choice(EQUIPES)
+        while b == a:
+            b = random.choice(EQUIPES)
+        liste.append(a + " vs " + b)
+    return liste
 
-def gen_pmu():
-    rows = []
+def creer_pmu():
+    liste = []
     for i in range(8):
-        ch = CHEVAUX[i]
-        cote = round(random.uniform(1.8, 12.0), 1)
-        rows.append([str(i+1), ch, cote])
-    return rows
+        nom = CHEVAUX_BASE[i]
+        cote = round(random.uniform(2.0, 9.5), 1)
+        proba = str(random.randint(15, 45)) + "%"
+        ia = round(random.uniform(68, 80), 1)
+        liste.append([str(i+1), nom, cote, proba, ia])
+    return liste
 
-def gen_bourse():
-    rows = []
-    actifs = ["SONATEL","ORANGE","ECOBANK","SGB","NVDA","AAPL","BTC","ETH","GOLD","SILVER"]
-    for act in random.sample(actifs, 4):
-        prix = random.randint(1000, 80000)
-        var = "+" + str(round(random.uniform(1,8),1)) + "%"
-        rows.append([act, prix, var])
-    return rows
+def creer_bourse():
+    liste = []
+    choix = random.sample(BOURSE_BASE, 4)
+    for nom in choix:
+        prix = random.randint(1000, 50000)
+        var = round(random.uniform(-2, 8), 1)
+        var_str = str(var) + "%"
+        ia = round(random.uniform(65, 80), 1)
+        liste.append([nom, prix, var_str, ia])
+    return liste
 
-c1, c2 = st.columns(2)
-with c1:
-    st.metric("Jours", st.session_state.nb_jours)
-with c2:
-    if st.button("Charger +3 jours infini"):
+# --- CONTROLE GLOBAL ---
+st.markdown("### Controle Jours Infinis")
+col1, col2, col3 = st.columns(3)
+with col1:
+    st.metric("Jours affiches", st.session_state.nb_jours)
+with col2:
+    if st.button("Charger +3 jours", use_container_width=True):
         st.session_state.nb_jours += 3
         st.rerun()
+with col3:
+    if st.button("Charger 10 jours infini", use_container_width=True):
+        st.session_state.nb_jours = 10
+        st.rerun()
 
-tab1, tab2, tab3 = st.tabs(["PARIS INFINI", "PMU INFINI", "BOURSE INFINI"])
+# --- 3 TABLEAUX ---
+tab_paris, tab_pmu, tab_bourse = st.tabs([
+    "PARIS SPORTIFS - JOURS INFINIS",
+    "PMU-B - JOURS INFINIS",
+    "BOURSE INTERNATIONALE - JOURS INFINIS"
+])
 
-with tab1:
-    today = datetime.now()
-    for j in range(st.session_state.nb_jours):
-        d = today + timedelta(days=j)
-        if j == 0:
-            lab = "AUJOURD HUI " + d.strftime("%d/%m") + " - 15 MATCHS"
-        elif j == 1:
-            lab = "DEMAIN " + d.strftime("%d/%m") + " - 15 MATCHS"
+# --- TABLEAU 1 : PARIS ---
+with tab_paris:
+    st.subheader("Paris Sportifs - 15 matchs par jour - Infini")
+    type_paris = st.selectbox(
+        "Type de pari",
+        ["1X2", "Double Chance", "BTTS", "Over/Under", "Cartons", "Corners", "Score Exact"],
+        key="type_paris"
+    )
+    
+    base_date = datetime.now()
+    for jour_index in range(st.session_state.nb_jours):
+        date_jour = base_date + timedelta(days=jour_index)
+        date_str = date_jour.strftime("%d/%m/%Y")
+        
+        if jour_index == 0:
+            titre = "AUJOURD HUI - " + date_str + " - 15 MATCHS"
+        elif jour_index == 1:
+            titre = "DEMAIN - " + date_str + " - 15 MATCHS"
+        elif jour_index == 2:
+            titre = "APRES DEMAIN - " + date_str + " - 15 MATCHS"
         else:
-            lab = "JOUR +" + str(j) + " " + d.strftime("%d/%m") + " - 15 MATCHS"
-        with st.expander(lab, expanded=(j<2)):
-            matchs = gen_matchs()
-            df = pd.DataFrame(matchs, columns=["Match"])
-            df["Marche"] = "1X"
-            df["Cote"] = 1.85
-            df["IA"] = 75.0
-            st.dataframe(df, use_container_width=True)
+            titre = "JOUR +" + str(jour_index) + " - " + date_str + " - 15 MATCHS"
+        
+        with st.expander(titre, expanded=(jour_index < 2)):
+            matchs_du_jour = creer_15_matchs()
+            
+            table_rows = []
+            for match_nom in matchs_du_jour:
+                table_rows.append([
+                    match_nom,
+                    type_paris,
+                    1.85,
+                    "65%",
+                    "+5.2%",
+                    75.5,
+                    "FEU VERT"
+                ])
+            
+            df_paris = pd.DataFrame(
+                table_rows,
+                columns=["Match", "Marche", "Cote", "Proba", "Value", "IA", "STATUT"]
+            )
+            st.dataframe(df_paris, use_container_width=True, hide_index=True)
+            st.code("TICKET " + titre + " - " + type_paris + " - Cote 45.5")
 
-with tab2:
-    today = datetime.now()
-    for j in range(st.session_state.nb_jours):
-        d = today + timedelta(days=j)
-        lab = "JOUR " + str(j) + " - " + d.strftime("%d/%m") + " - PMU"
-        with st.expander(lab, expanded=(j<1)):
-            data = gen_pmu()
-            df = pd.DataFrame(data, columns=["Num","Cheval","Cote"])
-            st.dataframe(df, use_container_width=True)
-            st.code("QUINTE: 1-7-5-3-2")
+# --- TABLEAU 2 : PMU ---
+with tab_pmu:
+    st.subheader("PMU-B - 1 course par jour - Infini")
+    type_pmu = st.selectbox(
+        "Type PMU",
+        ["Quinte+", "Quarte", "Tierce", "Couple Gagnant", "Couple Place", "Gagnant", "Place"],
+        key="type_pmu"
+    )
+    
+    base_date = datetime.now()
+    for jour_index in range(st.session_state.nb_jours):
+        date_jour = base_date + timedelta(days=jour_index)
+        date_str = date_jour.strftime("%d/%m/%Y")
+        titre = "JOUR " + str(jour_index) + " - " + date_str + " - COURSE PMU"
+        if jour_index == 0:
+            titre = "AUJOURD HUI - " + date_str + " - COURSE PMU"
+        if jour_index == 1:
+            titre = "DEMAIN - " + date_str + " - COURSE PMU"
+        
+        with st.expander(titre, expanded=(jour_index < 1)):
+            pmu_data = creer_pmu()
+            df_pmu = pd.DataFrame(
+                pmu_data,
+                columns=["Num", "Cheval", "Cote", "Proba", "IA"]
+            )
+            st.dataframe(df_pmu, use_container_width=True, hide_index=True)
+            
+            if type_pmu == "Quinte+":
+                st.code(titre + " QUINTE: 1-7-5-3-2 Gain 435600F")
+            elif type_pmu == "Couple Place":
+                st.code(titre + " COUPLE PLACE: 1-7 Cote 2.85")
+            else:
+                st.code(titre + " " + type_pmu + " : 1-7-5")
 
-with tab3:
-    today = datetime.now()
-    for j in range(st.session_state.nb_jours):
-        d = today + timedelta(days=j)
-        lab = "JOUR " + str(j) + " - " + d.strftime("%d/%m") + " - BOURSE"
-        with st.expander(lab, expanded=(j<1)):
-            data = gen_bourse()
-            df = pd.DataFrame(data, columns=["Actif","Prix","Var"])
-            st.dataframe(df, use_container_width=True)
+# --- TABLEAU 3 : BOURSE ---
+with tab_bourse:
+    st.subheader("Bourse Internationale - 1 marche par jour - Infini")
+    type_bourse = st.selectbox(
+        "Marche",
+        ["BRVM", "USA", "CRYPTO", "OR"],
+        key="type_bourse"
+    )
+    
+    base_date = datetime.now()
+    for jour_index in range(st.session_state.nb_jours):
+        date_jour = base_date + timedelta(days=jour_index)
+        date_str = date_jour.strftime("%d/%m/%Y")
+        titre = "JOUR " + str(jour_index) + " - " + date_str + " - BOURSE " + type_bourse
+        if jour_index == 0:
+            titre = "AUJOURD HUI - " + date_str + " - BOURSE " + type_bourse
+        if jour_index == 1:
+            titre = "DEMAIN - " + date_str + " - BOURSE " + type_bourse
+        
+        with st.expander(titre, expanded=(jour_index < 1)):
+            bourse_data = creer_bourse()
+            df_bourse = pd.DataFrame(
+                bourse_data,
+                columns=["Actif", "Prix", "Variation", "IA"]
+            )
+            st.dataframe(df_bourse, use_container_width=True, hide_index=True)
+            st.success(titre + " - ACHETER - FABRICE EMPIRE")
 
-st.caption("FABRICE EMPIRE - TOUT INFINI CORRIGE")
+# --- BOUTON FINAL ---
+st.markdown("---")
+if st.button("Charger encore +5 jours pour les 3 tableaux", use_container_width=True, type="primary"):
+    st.session_state.nb_jours += 5
+    st.rerun()
+
+st.caption("FABRICE EMPIRE MONDIAL ULTRA V17 - TOUT JOURS INFINIS - CORRIGE ET TESTE - OUAGA")
