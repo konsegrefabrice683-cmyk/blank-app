@@ -3,101 +3,75 @@ import pandas as pd
 import random
 from datetime import datetime, timedelta
 
-st.set_page_config(page_title="FABRICE EMPIRE", layout="wide")
-st.title("FABRICE EMPIRE MONDIAL ULTRA V16.3 - TOUT JOURS INFINIS")
-st.caption("OUAGA - V16.3 BASE - JOURS INFINIS")
+st.set_page_config(page_title="FABRICE EMPIRE V17", layout="wide")
+
+st.title("FABRICE EMPIRE MONDIAL ULTRA V17 - MOTEUR JOURS INFINIS")
+st.caption("PARIS 15 MATCHS + PMU 8 CHEVAUX + BOURSE 4 ACTIFS | JOURS INFINIS | OUAGA")
 
 if "nb_jours" not in st.session_state:
-    st.session_state.nb_jours = 3
+    st.session_state.nb_jours = 5
 
-EQUIPES = ["Brest","Nice","Mamelodi","Raja","Real","Barca","Man City","Arsenal","Bayern","Dortmund","PSG","Lyon","Inter","Milan","EFO","ASFA","ASEC","Wydad","Burkina","Mali"]
+EQUIPES = ["Real Madrid","Barca","Man City","Arsenal","Bayern","PSG","Inter","Milan","Brest","Nice","Mamelodi","Raja","EFO","ASFA","ASEC","Wydad","Burkina","Al Ahly","Zamalek","Simba","TP Mazembe","Liverpool","Chelsea","Juventus","Dortmund"]
+CHEVAUX = ["Mogho Power","Bangr Nooma","Etalon dOr","Wend Panga","Faso Eclair","Sahel Vent","Ouaga Flash","Bobo Speed","Kadiogo Star","Zaka Force","Yennenga","Burkina Star"]
+ACTIFS = ["SONATEL","ORANGE","ECOBANK","SGB","NVDA","AAPL","TSLA","BTC","ETH","SOL","GOLD","SILVER"]
 
-def gen_matchs():
-    res = []
-    for _ in range(15):
-        a = random.choice(EQUIPES)
-        b = random.choice(EQUIPES)
-        while b == a:
-            b = random.choice(EQUIPES)
-        res.append(a + " vs " + b)
-    return res
+def get_label_jour(j, date_obj, suffix):
+    ds = date_obj.strftime("%d/%m/%Y")
+    if j == 0:
+        return f"AUJOURD HUI - {ds} - {suffix}"
+    elif j == 1:
+        return f"DEMAIN - {ds} - {suffix}"
+    elif j == 2:
+        return f"APRES DEMAIN - {ds} - {suffix}"
+    else:
+        return f"JOUR +{j} - {ds} - {suffix}"
 
-def gen_paris(matchs, type_p):
-    rows = []
-    for m in matchs:
-        rows.append([m, type_p, 1.85, "65%", "+5%", 75.5, "FEU VERT"])
-    return rows
-
-def gen_pmu():
-    rows = []
-    noms = ["Mogho Power","Bangr Nooma","Etalon dOr","Wend Panga","Faso Eclair","Sahel Vent","Ouaga Flash","Bobo Speed"]
-    for i, n in enumerate(noms):
-        rows.append([str(i+1), n, round(random.uniform(2,9),1), "25%", 72.0, "VERT"])
-    return rows
-
-def gen_bourse():
-    rows = []
-    noms = ["SONATEL","ORANGE","ECOBANK","SGB","NVDA","BTC","ETH","GOLD"]
-    for n in random.sample(noms, 4):
-        rows.append([n, random.randint(1000,50000), "+2.5%", 75.0, "ACHETER"])
-    return rows
-
-c1,c2 = st.columns(2)
-with c1:
-    st.metric("Jours", st.session_state.nb_jours)
-with c2:
-    if st.button("Charger +3 jours infini"):
+col1, col2, col3 = st.columns([2,2,2])
+with col1:
+    st.metric("Moteur V17", f"{st.session_state.nb_jours} JOURS INFINIS")
+with col2:
+    if st.button("➕ +3 JOURS INFINIS", use_container_width=True):
         st.session_state.nb_jours += 3
         st.rerun()
+with col3:
+    if st.button("♾️ +10 JOURS INFINIS", use_container_width=True, type="primary"):
+        st.session_state.nb_jours += 10
+        st.rerun()
 
-tab1,tab2,tab3 = st.tabs(["PARIS INFINI","PMU INFINI","BOURSE INFINI"])
+tabs = st.tabs(["PARIS V17 INFINI", "PMU-B V17 INFINI", "BOURSE V17 INFINI"])
 
-today = datetime.now()
-
-with tab1:
-    tp = st.selectbox("Type LONAB", ["1X2","Double Chance","BTTS","Over/Under","Cartons","Corners","Score Exact"], key="p1")
+with tabs[0]:
+    type_paris = st.selectbox("Type LONAB V17", ["1X2","Double Chance","BTTS Oui/Non","Over/Under","Cartons","Corners","Score Exact"], key="v17_p")
+    today = datetime.now()
     for j in range(st.session_state.nb_jours):
         dj = today + timedelta(days=j)
-        ds = dj.strftime("%d/%m/%Y")
-        if j==0:
-            titre = "AUJOURD HUI - " + ds + " - 15 MATCHS"
-        elif j==1:
-            titre = "DEMAIN - " + ds + " - 15 MATCHS"
-        else:
-            titre = "JOUR +" + str(j) + " - " + ds + " - 15 MATCHS"
-        with st.expander(titre, expanded=(j<2)):
-            matchs = gen_matchs()
-            data = gen_paris(matchs, tp)
-            df = pd.DataFrame(data, columns=["Match","Marche","Cote","Proba","Value","IA","STATUT"])
-            st.dataframe(df, use_container_width=True, hide_index=True)
-
-with tab2:
-    tp2 = st.selectbox("Type PMU", ["Quinte+","Quarte","Tierce","Couple Gagnant","Couple Place","Gagnant","Place"], key="p2")
-    for j in range(st.session_state.nb_jours):
-        dj = today + timedelta(days=j)
-        ds = dj.strftime("%d/%m/%Y")
-        titre = "JOUR " + str(j) + " - " + ds + " - PMU"
-        if j==0:
-            titre = "AUJOURD HUI - " + ds + " - PMU"
-        with st.expander(titre, expanded=(j<1)):
-            data = gen_pmu()
-            df = pd.DataFrame(data, columns=["Num","Cheval","Cote","Proba","IA","STATUT"])
-            st.dataframe(df, use_container_width=True, hide_index=True)
-            st.code(titre + " " + tp2 + " 1-7-5")
-
-with tab3:
-    tp3 = st.selectbox("Marche", ["BRVM","USA","CRYPTO","OR"], key="p3")
-    for j in range(st.session_state.nb_jours):
-        dj = today + timedelta(days=j)
-        ds = dj.strftime("%d/%m/%Y")
-        titre = "JOUR " + str(j) + " - " + ds + " - BOURSE " + tp3
-        if j==0:
-            titre = "AUJOURD HUI - " + ds + " - BOURSE " + tp3
-        with st.expander(titre, expanded=(j<1)):
-            data = gen_bourse()
-            df = pd.DataFrame(data, columns=["Actif","Prix","Var","IA","Action"])
-            st.dataframe(df, use_container_width=True, hide_index=True)
-
-if st.button("Charger +5 jours pour tout"):
-    st.session_state.nb_jours += 5
-    st.rerun()
+        label = get_label_jour(j, dj, "15 MATCHS V17")
+        with st.expander(label, expanded=(j < 2)):
+            rows = []
+            for k in range(15):
+                a = random.choice(EQUIPES)
+                b = random.choice(EQUIPES)
+                while b == a:
+                    b = random.choice(EQUIPES)
+                match = a + " vs " + b
+                if type_paris == "1X2":
+                    marche = a + " Win"
+                    cote = round(random.uniform(1.6, 3.2), 2)
+                elif type_paris == "Double Chance":
+                    marche = random.choice(["1X","X2","12"])
+                    cote = round(random.uniform(1.3, 1.9), 2)
+                elif type_paris == "BTTS Oui/Non":
+                    marche = random.choice(["BTTS Oui","BTTS Non"])
+                    cote = round(random.uniform(1.7, 2.2), 2)
+                elif type_paris == "Over/Under":
+                    marche = random.choice(["Over 2.5","Under 2.5","Over 1.5"])
+                    cote = round(random.uniform(1.8, 2.3), 2)
+                elif type_paris == "Cartons":
+                    marche = random.choice(["Over 3.5 Cartons","Over 4.5 Cartons"])
+                    cote = round(random.uniform(1.7, 2.4), 2)
+                elif type_paris == "Corners":
+                    marche = random.choice(["Over 8.5 Corners","Over 9.5 Corners"])
+                    cote = round(random.uniform(1.8, 2.2), 2)
+                else:
+                    marche = random.choice(["1-0","2-1","2-0","1-1"])
+                    cote = round(random.uniform(6.0, 12.0), 
